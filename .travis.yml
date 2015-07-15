@@ -8,6 +8,11 @@ php:
 services:
   - memcached
 
+matrix:
+  allow_failures:
+    - php: 7.0
+    - php: hhvm
+
 sudo: false
 before_install: composer self-update
 install: composer install --dev
