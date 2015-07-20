@@ -51,29 +51,32 @@ class Memcached implements Cache
         // Create memcached object
         $this->cache = new \Memcached();
 
-        // Check if there already are servers added
+        // Check if there already are servers added, according to the manual
+        // http://php.net/manual/en/memcached.addservers.php no duplication checks
+        // are made. Since we have at least one connection we don't need to add
+        // more servers and maybe add duplicates.
         if (count($this->cache->getServerList()) === 0) {
             // Add servers
             $this->cache->addServers($servers);
-
-            // Get server stats
-            $stats = $this->cache->getStats();
-            // Loop through servers
-            foreach ($stats as $stat) {
-                // Check if pid is more than 0, if pid is -1 connection isn't working
-                if ($stat['pid'] > 0) {
-                    // Return true to avoid the exception below
-                    return true;
-                }
-            }
-
-            // If we end up here we don't have a working connection. Throw an exception that
-            // will be handled by the method calling this connect method. A working cache is
-            // NOT a requirement for the application to run so it's important to handle the
-            // exception and let the application run. Suggestion: if the exception below is
-            // thrown a new NullCache should be created
-            throw new \Exception('Unable to connect to Memcache(d) backend');
         }
+
+        // Get server stats
+        $stats = $this->cache->getStats();
+        // Loop through servers
+        foreach ($stats as $stat) {
+            // Check if pid is more than 0, if pid is -1 connection isn't working
+            if ($stat['pid'] > 0) {
+                // Return true to avoid the exception below
+                return true;
+            }
+        }
+
+        // If we end up here we don't have a working connection. Throw an exception that
+        // will be handled by the method calling this connect method. A working cache is
+        // NOT a requirement for the application to run so it's important to handle the
+        // exception and let the application run. Suggestion: if the exception below is
+        // thrown a new NullCache should be created
+        throw new \Exception('Unable to connect to Memcache(d) backend');
     }
 
     /**
