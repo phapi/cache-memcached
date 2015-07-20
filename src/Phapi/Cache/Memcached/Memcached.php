@@ -6,7 +6,7 @@ namespace Phapi\Cache\Memcached;
 use Phapi\Contract\Cache\Cache;
 
 /**
- * Memcached
+ * Memcached Cache Provider
  *
  * @category Phapi
  * @package  Phapi\Cache\Memcached
